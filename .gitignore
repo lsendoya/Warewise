@@ -19,3 +19,11 @@
 
 # Go workspace file
 go.work
+
+.env
+.aws-sam
+/migrations.sql
+/bin/
+/bootstrap.zip
+.idea
+/internal/template/
