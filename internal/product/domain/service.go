@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/google/uuid"
+	"mime/multipart"
 )
 
 type UseCase interface {
@@ -10,7 +11,7 @@ type UseCase interface {
 	Delete(id uuid.UUID) error
 	Get(id uuid.UUID) (*Product, error)
 	List() (Products, error)
-	UploadImageFile(formData *FormDataProduct) ([]string, error)
+	UploadImageFile(ImageFiles []*multipart.FileHeader) ([]string, error)
 }
 
 type Storage interface {

@@ -17,7 +17,6 @@ import (
 )
 
 func StartApp(ctx context.Context, request events.APIGatewayV2HTTPRequest) (*events.APIGatewayProxyResponse, error) {
-	defer logger.SyncLogger()
 
 	cfg, errCfg := aws.Config()
 	if errCfg != nil {

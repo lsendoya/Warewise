@@ -39,12 +39,13 @@ func (r *Route) Routes(ctx context.Context, request events.APIGatewayV2HTTPReque
 	token := request.Headers["authorization"]
 
 	if strings.HasPrefix(path, "/api/v1/admin/products") {
-		isValid, cognitoGroups, err := auth.ValidateToken(token)
-		if !isValid {
-			return r.res.Unauthorized(err)
+		jwtParsed, err := auth.ParseJWT(token)
+		if err != nil {
+					return r.res.Unauthorized(err)
 		}
 
-		if !tools.Contains(cognitoGroups, "admin") {
+
+		if !tools.Contains(jwtParsed.CognitoGroups, "admin") {
 			return r.res.Forbidden()
 		}
 

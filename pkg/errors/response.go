@@ -15,16 +15,16 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-func headers() map[string]string {
-	return map[string]string{
-		"Content-Type": "application/json",
-	}
-}
-
 type MessageResponse struct {
 	Data     interface{} `json:"data"`
 	Errors   Response    `json:"errors"`
 	Messages Response    `json:"messages"`
+}
+
+func headers() map[string]string {
+	return map[string]string{
+		"Content-Type": "application/json",
+	}
 }
 
 func (r Response) OK(data interface{}) (*events.APIGatewayProxyResponse, error) {

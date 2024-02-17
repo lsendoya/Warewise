@@ -7,7 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/lsendoya/Warewise/internal/product/domain"
 	"github.com/lsendoya/Warewise/pkg/aws"
-		"os"
+	"mime/multipart"
+	"os"
 	"time"
 )
 
@@ -27,7 +28,7 @@ func (p *Product) Add(formData *domain.FormDataProduct) (*domain.Product, error)
 	product := new(domain.Product)
 	product.BeforeCreated()
 
-	urls, err := p.UploadImageFile(formData)
+	urls, err := p.UploadImageFile(formData.ImageFiles)
 	if err != nil {
 		return nil, err
 	}
@@ -67,15 +68,15 @@ func (p *Product) List() (domain.Products, error) {
 	return p.storage.List()
 }
 
-func (p *Product) UploadImageFile(formData *domain.FormDataProduct) ([]string, error) {
+func (p *Product) UploadImageFile(ImageFiles []*multipart.FileHeader) ([]string, error) {
 	var urls []string
-	for _, fileHeader := range formData.ImageFiles {
+	for _, fileHeader := range ImageFiles {
 		file, err := fileHeader.Open()
 		if err != nil {
 			return nil, errors.New("error opening the uploaded file")
 		}
 
-				fileName := fileHeader.Filename
+		fileName := fileHeader.Filename
 
 		url, errUpload := p.awsSvc.UploadFile(os.Getenv("BUCKET_NAME"), fileName, file)
 		if errUpload != nil {
@@ -84,7 +85,7 @@ func (p *Product) UploadImageFile(formData *domain.FormDataProduct) ([]string, e
 
 		errFileClose := file.Close()
 		if err != nil {
-		return nil, errFileClose
+			return nil, errFileClose
 		}
 
 		urls = append(urls, url)
