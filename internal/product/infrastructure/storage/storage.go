@@ -6,6 +6,7 @@ import (
 	"github.com/lsendoya/Warewise/internal/product/domain"
 	"github.com/lsendoya/Warewise/pkg/logger"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Storage struct {
@@ -41,12 +42,38 @@ func (s *Storage) Get(id uuid.UUID) (*domain.Product, error) {
 }
 
 func (s *Storage) Update(id uuid.UUID, product *domain.Product) (*domain.Product, error) {
-	mdl, err := s.Get(id)
-	if err != nil {
-		return &domain.Product{}, err
+	var mdl domain.Product
+
+	updateFields := map[string]interface{}{
+		"updatedAt": time.Now(),
 	}
 
-	result := s.db.Model(mdl).Updates(*product)
+	if product.Name != "" {
+		updateFields["name"] = product.Name
+	}
+	if product.Description != "" {
+		updateFields["description"] = product.Description
+	}
+
+	if product.Size != nil {
+		updateFields["size"] = product.Size
+	}
+
+	if product.Color != "" {
+		updateFields["color"] = product.Color
+	}
+
+	if product.Price != 0 {
+		updateFields["price"] = product.Price
+	}
+
+	if !product.Available {
+		updateFields["available"] = false
+	} else {
+		updateFields["available"] = product.Available
+	}
+
+	result := s.db.Model(mdl).Where("id = ?", id).Updates(updateFields)
 	if result.Error != nil {
 		msgErr := fmt.Sprintf("error updating product with id %s: %v", id, result.Error)
 		logger.Errorf(msgErr)
@@ -54,7 +81,8 @@ func (s *Storage) Update(id uuid.UUID, product *domain.Product) (*domain.Product
 	}
 
 	logger.Info("product was updated successfully")
-	return mdl, nil
+	return s.Get(id)
+
 }
 
 func (s *Storage) Delete(id uuid.UUID) error {

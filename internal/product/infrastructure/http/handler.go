@@ -61,17 +61,17 @@ func (h Handler) Add(ctx context.Context, request events.APIGatewayV2HTTPRequest
 }
 
 func (h Handler) Update(ctx context.Context, request events.APIGatewayV2HTTPRequest) (*events.APIGatewayProxyResponse, error) {
-	var payload *domain.Product
+	var payload domain.Product
 	if err := json.Unmarshal([]byte(request.Body), &payload); err != nil {
 		return h.res.BadRequest(err)
 	}
-
+	logger.Info("payload -handler", payload)
 	id, err := uuid.Parse(request.PathParameters["id"])
 	if err != nil {
 		return h.res.BadRequest(err)
 	}
 
-	product, errUpdated := h.uc.Update(id, payload)
+	product, errUpdated := h.uc.Update(id, &payload)
 	if errUpdated != nil {
 		logger.Errorf("h.uc.Update(id, payload)-->", errUpdated)
 		if errors.Is(errUpdated, gorm.ErrRecordNotFound) {
@@ -169,8 +169,8 @@ func extractForm(form *multipart.Form) (domain.FormDataProduct, error) {
 		return domain.FormDataProduct{}, err
 	}
 
-	if isAvailable, err := strconv.ParseBool(form.Value["isAvailable"][0]); err == nil {
-		formData.IsAvailable = isAvailable
+	if Available, err := strconv.ParseBool(form.Value["available"][0]); err == nil {
+		formData.Available = Available
 	} else {
 		return domain.FormDataProduct{}, err
 	}

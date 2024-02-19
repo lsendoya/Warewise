@@ -16,11 +16,11 @@ type Product struct {
 	Size        json.RawMessage `gorm:"type:jsonb" json:"size"`
 	Color       string          `gorm:"size:100" json:"color"`
 	Material    *string         `gorm:"size:100" json:"material"`
-	ImageURLS   json.RawMessage `gorm:"type:jsonb" json:"imageURLS"`
-	IsAvailable bool            `gorm:"not null;default:true" json:"isAvailable"`
-	CreatedAt   time.Time       `json:"createdAt"`
-	UpdatedAt   time.Time       `json:"updatedAt"`
-	DeletedAt   gorm.DeletedAt  `gorm:"index" json:"deletedAt,omitempty"`
+	ImageURLS   json.RawMessage `gorm:"type:jsonb; column:imageURLS" json:"imageURLS"`
+	Available   bool            `gorm:"type:boolean; column:available" json:"available"`
+	CreatedAt   time.Time       `gorm:"column:createdAt" json:"createdAt"`
+	UpdatedAt   time.Time       `gorm:"column:updatedAt" json:"updatedAt"`
+	DeletedAt   gorm.DeletedAt  `gorm:"index; column:deletedAt" json:"deletedAt,omitempty"`
 }
 
 type Products []Product
@@ -36,7 +36,7 @@ type FormDataProduct struct {
 	Description string
 	Price       float64
 	Color       string
-	IsAvailable bool
+	Available   bool `json:"available"`
 	Size        json.RawMessage
 	ImageFiles  []*multipart.FileHeader
 }

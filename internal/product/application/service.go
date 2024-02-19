@@ -9,7 +9,6 @@ import (
 	"github.com/lsendoya/Warewise/pkg/aws"
 	"mime/multipart"
 	"os"
-	"time"
 )
 
 type Product struct {
@@ -44,7 +43,7 @@ func (p *Product) Add(formData *domain.FormDataProduct) (*domain.Product, error)
 	product.Price = formData.Price
 	product.Color = formData.Color
 	product.Description = formData.Description
-	product.IsAvailable = formData.IsAvailable
+	product.Available = formData.Available
 	product.Size = formData.Size
 
 	return p.storage.Add(product)
@@ -54,7 +53,6 @@ func (p *Product) Update(id uuid.UUID, product *domain.Product) (*domain.Product
 	if err != nil {
 		return nil, err
 	}
-	mdl.UpdatedAt = time.Now()
 
 	return mdl, nil
 }
